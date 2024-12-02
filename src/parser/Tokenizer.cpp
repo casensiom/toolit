@@ -8,7 +8,7 @@ namespace cam::parser {
 
 bool
 Tokenizer::eof() const {
-    return currentPos >= (content.size() - 1);
+    return currentPos >= content.size();
 }
 
 unsigned char
@@ -21,7 +21,7 @@ Tokenizer::peek() const {
 
 unsigned char
 Tokenizer::peekNext() const {
-    if((currentPos + 1) >= (content.size() - 1)) {
+    if(currentPos + 1 >= content.size()) {
         return '\0';
     }
     return content[currentPos + 1];
@@ -32,8 +32,7 @@ Tokenizer::advance() {
     if(eof()) {
         return '\0';
     }
-    currentPos++;
-    return content[currentPos];
+    return content[currentPos++];
 }
 
 bool
@@ -48,8 +47,10 @@ Tokenizer::advanceIfEqual(unsigned char val) {
 
 std::string
 Tokenizer::consume() {
-    size_t len = (currentPos - prevPos);
-    return StringUtil::substr(content, currentPos, len);
+    size_t      len   = currentPos - prevPos;
+    std::string token = StringUtil::substr(content, prevPos, len);
+    prevPos           = currentPos;
+    return token;
 }
 
 void
