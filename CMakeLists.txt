@@ -7,7 +7,7 @@ set(MAIN_PROJECT_NAME "toolit")
 project(${MAIN_PROJECT_NAME})
 
 # Establecer el estándar de C++
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Añadir el directorio fuente
