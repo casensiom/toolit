@@ -111,6 +111,15 @@ StringUtil::split(const std::string &str, const std::string &delim, const Option
     return result;
 }
 
+std::string
+StringUtil::join(const std::vector<std::string> &items, const std::string &glue) {
+    std::string ret;
+    for(const auto &s : items) {
+        ret += s + glue;
+    }
+    return ret.substr(0, ret.length() - glue.length());
+}
+
 bool
 StringUtil::starts(const std::string &str, const std::string &separator, const Option &option) {
     if(separator.size() > str.size())

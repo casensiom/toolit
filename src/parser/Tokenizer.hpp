@@ -15,7 +15,9 @@ public:
     unsigned char peekNext() const;
     unsigned char advance();
     bool          advanceIfEqual(unsigned char val);
+    size_t        length() const;
     std::string   consume();
+    void          cancel();
     void          reset();
 
     std::string consume(size_t len);
@@ -23,9 +25,15 @@ public:
     size_t      consumeInteger();
     float       consumeFloat();
 
-    std::vector<std::string> consumeStringList();
-    std::vector<size_t>      consumeIntegerList();
-    std::vector<float>       consumeFloatList();
+    std::vector<std::string> consumeStringList(const std::string &delim = " ");
+    std::vector<size_t>      consumeIntegerList(const std::string &delim = " ");
+    std::vector<float>       consumeFloatList(const std::string &delim = " ");
+
+    bool isAlpha(unsigned char chr);
+    bool isNumeric(unsigned char chr);
+    bool isAlphaNum(unsigned char chr);
+    bool isSpace(unsigned char chr);
+    bool isEndLine(unsigned char chr);
 
 private:
     std::string content;
