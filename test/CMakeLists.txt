@@ -1,25 +1,29 @@
-# Google Test (requerido)
-# find_package(GTest REQUIRED)
-# include_directories(${GTEST_INCLUDE_DIRS})
+find_package(GTest)
+if(GTEST_LIBRARY)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    set(gtestlib GTest::GTest)
+else()
+    message(STATUS "GTest not found, manage to download it.")
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/heads/main.zip
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+    set(gtestlib gtest_main)
+endif()
 
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/heads/main.zip
-)
-
-# Traer Google Test
-FetchContent_MakeAvailable(googletest)
-
-
-# Archivos fuente de pruebas
+# Add all source files
 file(GLOB TEST_SOURCES *.cpp)
 
-# Crear un ejecutable para las pruebas
-add_executable(runTests ${TEST_SOURCES})
+set(TEST_PROJECT_NAME ${MAIN_PROJECT_NAME}_test)
 
-# Enlazar el ejecutable con la biblioteca util y GTest
-target_link_libraries(runTests ${MAIN_PROJECT_NAME} gtest_main)
+# Build an executable binary
+add_executable(${TEST_PROJECT_NAME} ${TEST_SOURCES})
 
-# Registrar las pruebas
-add_test(NAME runTests COMMAND runTests)
+# Link the binary with the library and gtest
+target_link_libraries(${TEST_PROJECT_NAME} ${MAIN_PROJECT_NAME} ${gtestlib})
+
+# Register tests
+add_test(NAME ${TEST_PROJECT_NAME} COMMAND ${TEST_PROJECT_NAME})

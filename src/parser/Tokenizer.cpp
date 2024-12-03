@@ -87,13 +87,25 @@ Tokenizer::consume(size_t len) {
 
 std::string
 Tokenizer::consumeString() {
-    printf("[ERROR] 'consumeString' Not implemented yet\n");
-    return "";
+    // ignore all previous spaces
+    while(!eof() && isSpace(peek())) {
+        advance();
+    }
+    consume();
+
+    // capture until space or eof
+    while(!eof() && !isSpace(peek())) {
+        advance();
+    }
+    return consume();
 }
 
-size_t
+int32_t
 Tokenizer::consumeInteger() {
-    size_t ret = 0;
+    int32_t ret = 0;
+    if(peek() == '-') {
+        advance();
+    }
     while(isNumeric(peek())) {
         advance();
     }
@@ -106,6 +118,9 @@ Tokenizer::consumeInteger() {
 float
 Tokenizer::consumeFloat() {
     float ret = 0;
+    if(peek() == '-') {
+        advance();
+    }
     while(isNumeric(peek())) {
         advance();
     }
@@ -123,14 +138,13 @@ Tokenizer::consumeFloat() {
 
 std::vector<std::string>
 Tokenizer::consumeStringList(const std::string &delim) {
-    printf("[ERROR] 'consumeStringList' Not implemented yet\n");
-    return {};
+    return StringUtil::split(content, delim);
 }
 
-std::vector<size_t>
+std::vector<int32_t>
 Tokenizer::consumeIntegerList(const std::string &delim) {
-    std::vector<size_t> ret;
-    auto                items = StringUtil::split(content, delim);
+    std::vector<int32_t> ret;
+    auto                 items = StringUtil::split(content, delim);
     for(const auto &it : items) {
         ret.push_back(atoi(it.c_str()));
     }

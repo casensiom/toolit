@@ -1,12 +1,12 @@
-#include <gtest/gtest.h>
-
 #include <util/StringUtil.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace cam::util;
 
 StringUtil::Option
 defaultOption() {
-    return StringUtil::Option {};
+    return StringUtil::Option{};
 }
 
 TEST(StringUtilTest, Trim) {

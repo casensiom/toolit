@@ -149,13 +149,15 @@ FileUtil::dirContent(const std::string &path) {
 
 std::vector<std::string>
 FileUtil::pathComponents(const std::string &path) {
-    std::string url = StringUtil::replace(path, "\\", "/");
+    std::string        url = StringUtil::replace(path, "\\", "/");
+    StringUtil::Option opt;
     return StringUtil::split(url, "/");
 }
 
 std::string
 FileUtil::pathComponents(const std::string &path, int comp) {
-    auto list = FileUtil::pathComponents(path);
+    auto   list       = FileUtil::pathComponents(path);
+    size_t components = list.size();
 
     size_t size = std::min(static_cast<size_t>(std::abs(comp)), list.size());
     if(comp > 0) {
@@ -165,7 +167,7 @@ FileUtil::pathComponents(const std::string &path, int comp) {
     }
 
     std::string base = "";
-    if(!path.empty() && path[0] == '/') {
+    if(!path.empty() && path[0] == '/' && (comp >= 0 || (comp < 0 && abs(comp) >= components))) {    // not set it when removing from left
         base = "/";
     }
 
@@ -190,21 +192,22 @@ FileUtil::pathComponentAt(const std::string &path, size_t index) {
 
 std::string
 FileUtil::pathRemoveComponents(const std::string &path, int comp) {
-    auto list = FileUtil::pathComponents(path);
+    auto   list       = FileUtil::pathComponents(path);
+    size_t components = list.size();
 
     size_t size = std::min(static_cast<size_t>(std::abs(comp)), list.size());
-    if(comp > 0) {
+    if(comp < 0) {
         list.erase(list.begin(), list.begin() + size);
     } else {
         list.erase(list.end() - size, list.end());
     }
 
     std::string base = "";
-    if(!path.empty() && path[0] == '/') {
+    if(!path.empty() && path[0] == '/' && (comp >= 0 || (comp < 0 && abs(comp) >= components))) {    // not set it when removing from left
         base = "/";
     }
 
     return base + StringUtil::join(list, "/");
 }
 
-}
+}    // namespace cam::util
