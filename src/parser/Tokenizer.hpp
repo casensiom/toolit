@@ -7,9 +7,10 @@ namespace cam::parser {
 
 class Tokenizer {
 public:
-    Tokenizer(const std::string &content) : content(content), currentPos(0), prevPos(0) {
+    Tokenizer(const std::string &content = "") : content(content), currentPos(0), prevPos(0) {
     }
 
+    void          set(const std::string &data);
     bool          eof() const;
     unsigned char peek() const;
     unsigned char peekNext() const;

@@ -6,6 +6,12 @@ using namespace cam::util;
 
 namespace cam::parser {
 
+void
+Tokenizer::set(const std::string &data) {
+    content = data;
+    reset();
+}
+
 bool
 Tokenizer::eof() const {
     return currentPos >= content.size();
