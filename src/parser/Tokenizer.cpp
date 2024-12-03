@@ -43,6 +43,9 @@ Tokenizer::advance() {
 
 bool
 Tokenizer::advanceIfEqual(unsigned char val) {
+    if(eof()) {
+        return false;
+    }
     unsigned char next = advance();
     if(next != val) {
         currentPos--;
