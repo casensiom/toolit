@@ -33,6 +33,7 @@ public:
     static std::string              pathComponents(const std::string &path, int comp);
     static size_t                   pathComponentCount(const std::string &path);
     static std::string              pathComponentAt(const std::string &path, size_t index);
+    static std::string              pathRemoveComponents(const std::string &path, int comp);
 
     static std::string getPath(const std::string &path);
     static std::string getFilename(const std::string &path);

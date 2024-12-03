@@ -164,7 +164,12 @@ FileUtil::pathComponents(const std::string &path, int comp) {
         list.erase(list.begin(), list.end() - size);
     }
 
-    return StringUtil::join(list, "/");
+    std::string base = "";
+    if(!path.empty() && path[0] == '/') {
+        base = "/";
+    }
+
+    return base + StringUtil::join(list, "/");
 }
 
 size_t
@@ -181,6 +186,25 @@ FileUtil::pathComponentAt(const std::string &path, size_t index) {
         ret = list[index];
     }
     return ret;
+}
+
+std::string
+FileUtil::pathRemoveComponents(const std::string &path, int comp) {
+    auto list = FileUtil::pathComponents(path);
+
+    size_t size = std::min(static_cast<size_t>(std::abs(comp)), list.size());
+    if(comp > 0) {
+        list.erase(list.begin(), list.begin() + size);
+    } else {
+        list.erase(list.end() - size, list.end());
+    }
+
+    std::string base = "";
+    if(!path.empty() && path[0] == '/') {
+        base = "/";
+    }
+
+    return base + StringUtil::join(list, "/");
 }
 
 }
