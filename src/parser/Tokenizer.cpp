@@ -85,6 +85,15 @@ Tokenizer::consume(size_t len) {
     return token;
 }
 
+
+std::string
+Tokenizer::consumeAll() {
+    std::string token = StringUtil::substr(content, currentPos, content.size() - currentPos);
+    prevPos += content.size();
+    currentPos = prevPos;
+    return token;
+}
+
 std::string
 Tokenizer::consumeString() {
     // ignore all previous spaces
@@ -100,9 +109,9 @@ Tokenizer::consumeString() {
     return consume();
 }
 
-int32_t
+int64_t
 Tokenizer::consumeInteger() {
-    int32_t ret = 0;
+    int64_t ret = 0;
     if(peek() == '-') {
         advance();
     }
@@ -110,7 +119,7 @@ Tokenizer::consumeInteger() {
         advance();
     }
     if(length() > 0) {
-        ret = atoi(consume().c_str());
+        ret = std::stoll(consume());
     }
     return ret;
 }
@@ -131,22 +140,22 @@ Tokenizer::consumeFloat() {
         }
     }
     if(length() > 0) {
-        ret = atof(consume().c_str());
+        ret = std::stof(consume());
     }
     return ret;
 }
 
 std::vector<std::string>
 Tokenizer::consumeStringList(const std::string &delim) {
-    return StringUtil::split(content, delim);
+    return StringUtil::split(consumeAll(), delim);
 }
 
-std::vector<int32_t>
+std::vector<int64_t>
 Tokenizer::consumeIntegerList(const std::string &delim) {
-    std::vector<int32_t> ret;
-    auto                 items = StringUtil::split(content, delim);
+    std::vector<int64_t> ret;
+    auto                 items = StringUtil::split(consumeAll(), delim);
     for(const auto &it : items) {
-        ret.push_back(atoi(it.c_str()));
+        ret.push_back(std::stoll(it));
     }
     return ret;
 }
@@ -154,9 +163,9 @@ Tokenizer::consumeIntegerList(const std::string &delim) {
 std::vector<float>
 Tokenizer::consumeFloatList(const std::string &delim) {
     std::vector<float> ret;
-    auto               items = StringUtil::split(content, delim);
+    auto               items = StringUtil::split(consumeAll(), delim);
     for(const auto &it : items) {
-        ret.push_back(atof(it.c_str()));
+        ret.push_back(std::stof(it));
     }
     return ret;
 }

@@ -22,13 +22,14 @@ public:
     void          cancel();                             // cancel the current token
     void          reset();                              // reset the tokenizer
 
+    std::string consumeAll();           // consumes everything else
     std::string consume(size_t len);    // consumes a fixed size token
     std::string consumeString();        // consumes an string token
-    int32_t     consumeInteger();       // consumes an integer token
+    int64_t     consumeInteger();       // consumes an integer token
     float       consumeFloat();         // consumes a float token
 
     std::vector<std::string> consumeStringList(const std::string &delim = " ");
-    std::vector<int32_t>     consumeIntegerList(const std::string &delim = " ");
+    std::vector<int64_t>     consumeIntegerList(const std::string &delim = " ");
     std::vector<float>       consumeFloatList(const std::string &delim = " ");
 
     bool isAlpha(unsigned char chr);
