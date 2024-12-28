@@ -47,8 +47,9 @@ done
 cd ..
 BASE_DIR=$(pwd)
 UNAME=$(uname)
+EXTRA_ERROR="--ignore-errors mismatch,mismatch --ignore-errors gcov,gcov"
 if [ "$UNAME" == "Darwin" ]; then
-EXTRA_ERROR="--ignore-errors inconsistent --ignore-errors range"
+EXTRA_ERROR="${EXTRA_ERROR} --ignore-errors inconsistent --ignore-errors range"
 fi
 
 [ ! -d build-coverage ] && mkdir build-coverage
