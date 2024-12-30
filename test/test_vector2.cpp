@@ -21,21 +21,21 @@ TEST(Vector2Test, ComponentInitialization) {
 
 TEST(Vector2Test, SetMethods) {
     Vector2 v;
-    v.Set(5);
+    v.set(5);
     EXPECT_EQ(v, Vector2(5, 5));
-    v.Set(2, 8);
+    v.set(2, 8);
     EXPECT_EQ(v, Vector2(2, 8));
     Vector2 v2(4, 4);
-    v.Set(v2);
+    v.set(v2);
     EXPECT_EQ(v, v2);
 }
 
 TEST(Vector2Test, IsEqualWithEpsilon) {
     Vector2 v1(1.000001, 2.000001);
     Vector2 v2(1.000002, 2.000002);
-    EXPECT_TRUE(v1.IsEqual(v2, 0.00001));
-    EXPECT_FALSE(v1.IsEqual(v2, 0.0000001));
-    EXPECT_TRUE(v1.IsNotEqual(v2, 0.0000001));
+    EXPECT_TRUE(v1.isEqual(v2, 0.00001));
+    EXPECT_FALSE(v1.isEqual(v2, 0.0000001));
+    EXPECT_TRUE(v1.isNotEqual(v2, 0.0000001));
 }
 
 TEST(Vector2Test, EqualityOperators) {

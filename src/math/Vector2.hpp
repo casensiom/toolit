@@ -18,11 +18,16 @@ public:
     Vector2(double v) : x(v), y(v) {}
     Vector2(double x_, double y_) : x(x_), y(y_) {}
 
-    TMP_SCALAR void  Set(T _v)                { x = (double)_v; y = (double)_v; }
-    TMP_SCALAR void  Set(T _x, T _y)          { x = (double)_x; y = (double)_y; }
-    void             Set(const Vector2 &rho)  { x = rho.x;      y = rho.y;      }
-    bool             IsEqual   (const Vector2 &rho, double error = Float64::EPSILON) const { return cam::math::IsEqual(x, rho.x, error)    && cam::math::IsEqual(y, rho.y, error);    }
-    bool             IsNotEqual(const Vector2 &rho, double error = Float64::EPSILON) const { return cam::math::IsNotEqual(x, rho.x, error) && cam::math::IsNotEqual(y, rho.y, error); }
+    double getX() const { return x; }
+    double getY() const { return y; }
+
+
+    TMP_SCALAR void  set(T _v)                { x = (double)_v; y = (double)_v; }
+    TMP_SCALAR void  set(T _x, T _y)          { x = (double)_x; y = (double)_y; }
+    void             set(const Vector2 &rho)  { x = rho.x;      y = rho.y;      }
+    bool             isEqual   (const Vector2 &rho, double error = Float64::EPSILON) const { return cam::math::isEqual(x, rho.x, error)    && cam::math::isEqual(y, rho.y, error);    }
+    bool             isNotEqual(const Vector2 &rho, double error = Float64::EPSILON) const { return cam::math::isNotEqual(x, rho.x, error) && cam::math::isNotEqual(y, rho.y, error); }
+
     bool            operator == (const Vector2 &rho) const          { return ((x == rho.x) && (y == rho.y)); }
     bool            operator != (const Vector2 &rho) const          { return ((x != rho.x) || (y != rho.y)); }
     bool            operator < (const Vector2 &rho) const           { return (x < rho.x) && (y < rho.y); }
@@ -37,14 +42,14 @@ public:
     void            operator *= (const Vector2 &rho)                { x *= rho.x;          y *= rho.y;          }
     
     TMP_SCALAR void operator /= (T scalar) {
-        bool ret = cam::math::IsNotZero(scalar);
+        bool ret = cam::math::isNotZero(scalar);
         if (ret) {
             x /= scalar;
             y /= scalar;
         }
     }
     void operator /= (const Vector2 &rho) {
-        if (cam::math::IsNotZero(rho.x) && cam::math::IsNotZero(rho.y)) {
+        if (cam::math::isNotZero(rho.x) && cam::math::isNotZero(rho.y)) {
             x /= rho.x;
             y /= rho.y;
         }
@@ -81,19 +86,19 @@ public:
     }
 
     TMP_SCALAR friend Vector2 operator/(const Vector2& v, T scalar) {
-        if (cam::math::IsNotZero(scalar)) {
+        if (cam::math::isNotZero(scalar)) {
             return Vector2(v.x / scalar, v.y / scalar);
         }
         return v;
     }
     TMP_SCALAR friend Vector2 operator/(T scalar, const Vector2& v) {
-        if (cam::math::IsNotZero(v.x) && cam::math::IsNotZero(v.y)) {
+        if (cam::math::isNotZero(v.x) && cam::math::isNotZero(v.y)) {
             return Vector2(scalar / v.x, scalar / v.y);
         }
         return Vector2(scalar);
     }
     friend Vector2 operator/(const Vector2& lho, const Vector2& rho) {
-        if (cam::math::IsNotZero(rho.x) && cam::math::IsNotZero(rho.y)) {
+        if (cam::math::isNotZero(rho.x) && cam::math::isNotZero(rho.y)) {
             return Vector2(lho.x / rho.x, lho.y / rho.y);
         }
         return lho;
