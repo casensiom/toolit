@@ -11,12 +11,21 @@ using namespace cam::math;
 namespace cam::pathfinder {
 
 
-std::vector<std::vector<Cell>> 
-PathFinder::parse(const std::vector<std::string> &data) const {
+void
+PathFinder::foundStart(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const {
+    // do nothing
+}
 
+void
+PathFinder::foundEnd(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const {
+    // do nothing
+}
+
+std::vector<std::vector<Step>> 
+PathFinder::parse(const std::vector<std::string> &data) const {
     const size_t HEIGHT = data.size();
     const size_t WIDTH  = data[0].size();
-    std::vector<std::vector<Cell>> ret(HEIGHT, std::vector<Cell>(WIDTH, Cell()));
+    std::vector<std::vector<Step>> ret(HEIGHT, std::vector<Step>(WIDTH, Step()));
     for (size_t y = 0; y < HEIGHT; y++) {
         for (size_t x = 0; x < WIDTH; x++) {
             if(data[y][x] == '.') {
@@ -35,8 +44,8 @@ PathFinder::parse(const std::vector<std::string> &data) const {
 }
 
 bool
-PathFinder::canMove(const std::vector<std::vector<Cell>> &map, const Vector2 &from, const Vector2 &dir, const Vector2 &to) const {
-    return (map[to.getY()][to.getX()].type != BLOCK);
+PathFinder::canMove(const std::vector<std::vector<Step>> &map, const Vector2 &pos, const Vector2 &target) const {
+    return (map[target.getY()][target.getX()].type != BLOCK);
 }
 
 std::vector<Vector2> 
@@ -49,78 +58,89 @@ PathFinder::getValidDirections() const {
     };
 }
 
+double 
+PathFinder::computeCost(const std::vector<std::vector<Step>> &table, const Vector2 &pos, const Vector2 &target) const {
+    return table[pos.getY()][pos.getX()].gcost + computeHeuristic(table, pos, target);
+}
+
+double
+PathFinder::computeHeuristic(const std::vector<std::vector<Step>> &table, const Vector2 &pos, const Vector2 &target) const {
+    return pos.distance(target, MANHATTAN);
+}
+
 std::vector<Vector2>
-PathFinder::solve_a_star(const std::vector<std::vector<Cell>> &map) const {
-    const size_t HEIGHT = map.size();
-    const size_t WIDTH  = map[0].size();
-    std::vector<Step> table(HEIGHT * WIDTH, Step());
-    std::queue<size_t> q;
+PathFinder::solve_a_star(std::vector<std::vector<Step>> &table) const {
+    const size_t HEIGHT = table.size();
+    const size_t WIDTH  = table[0].size();
+    std::queue<Vector2> q;
     Vector2 start;
     Vector2 end;
 
     //Create a map
     for (int64_t y = 0; y < HEIGHT; ++y) {
         for (int64_t x = 0; x < WIDTH; ++x) {
-            table[y * WIDTH + x] = { x, y, 0, -1, -1, -1, false }; // cell
-            if(map[y][x].type == START) {
+            if(table[y][x].type == START) {
                 start.set(x, y);
-            } else if(map[y][x].type == END) {
+                foundStart(table, start);
+            } else if(table[y][x].type == END) {
                 end.set(x, y);
+                foundEnd(table, end);
             }
         }
     }
+    
+    auto dirs = getValidDirections();
 
-    q.push(start.getY() * WIDTH + start.getX());
-
+    q.push(start);
     while(!q.empty()) {
-        size_t idx = q.front();
+        Vector2 current = q.front();
         q.pop();
 
-        table[idx].found = true;
-        if (end.getY() == table[idx].y && end.getX() == table[idx].x) {
-            break;
+        if (current == end) {
+            continue;
         }
-        
-        auto dirs = getValidDirections();
+        table[current.getY()][current.getX()].found = true;
 
         for(const auto &direction : dirs) {
 
-            int64_t x = table[idx].x + direction.getX();
-            int64_t y = table[idx].y + direction.getY();
+            Vector2 nextPos = current + direction;
+            int64_t x = nextPos.getX();
+            int64_t y = nextPos.getY();
 
             if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
                 continue;
             }
 
-            size_t offset = y * WIDTH + x;
-            if (table[offset].x != x || table[offset].y != y) {
+            Step &next = table[y][x];
+            if(!canMove(table, current, nextPos)) {
                 continue;
             }
-            if(!canMove(map, Vector2(table[idx].x, table[idx].y), direction, Vector2(x, y))) {
-                continue;
-            }
-            if (table[offset].found) {
+            if (next.found) {
                 continue;
             }
 
-            int64_t gcost = table[idx].gcost + std::hypot(y - table[idx].y, x - table[idx].x);
-            if (table[offset].distance == 0 || table[offset].gcost > gcost) {
-                table[offset].gcost = gcost;
-                table[offset].hcost = std::hypot(y - end.getY(), x - end.getX());
-                table[offset].distance = table[offset].gcost + table[offset].hcost;
-                table[offset].prev = idx;
-                q.push(offset);
+            double gcost = computeCost(table, current, nextPos);
+            if (next.distance == 0 || next.gcost > gcost) {
+                next.gcost = gcost;
+                next.hcost = computeHeuristic(table, nextPos, end);
+                next.distance = next.gcost + next.hcost;
+                next.prev = current;
+                q.push(nextPos);
             }
             
         }
     }
 
 
-    size_t current = end.getY() * WIDTH + end.getX();
+
+    Vector2 current = end;
     std::vector<Vector2> solution;
-    while (table[current].prev != -1) {
-        solution.emplace_back(table[current].x, table[current].y);
-        current = table[current].prev;
+    while (current == end || (current != start && table[current.getY()][current.getX()].found)) {
+        solution.push_back(current);
+        current = table[current.getY()][current.getX()].prev;
+    }
+    if(!solution.empty()) {
+        solution.push_back(start);
     }
     std::reverse(solution.begin(), solution.end());
     return solution;
@@ -143,15 +163,22 @@ PathFinder::dump(const std::vector<std::string> &map, const std::vector<Vector2>
         std::cout << l << std::endl;
     }
     std::cout << std::endl;
-
 }
 
-std::vector<math::Vector2> 
+std::vector<math::Vector2>
 PathFinder::solve(const std::vector<std::string> &data) const {
     auto map = parse(data);
     auto ret = solve_a_star(map);
     dump(data, ret);
     return ret;
 }
+
+double
+PathFinder::cost(const std::vector<std::string> &data) const {
+    auto map = parse(data);
+    auto sol = solve_a_star(map);
+    return map[sol.back().getY()][sol.back().getX()].gcost;
+}
+
 
 }

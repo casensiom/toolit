@@ -82,7 +82,7 @@ TEST(StringUtilTest, Split) {
 }
 
 TEST(StringUtilTest, Starts) {
-    std::string        str = "Hello World";
+    std::string        str = "Hello";
     StringUtil::Option opt;
 
     EXPECT_TRUE(StringUtil::starts(str, "Hello"));
@@ -90,10 +90,11 @@ TEST(StringUtilTest, Starts) {
 
     opt.sensitive = false;
     EXPECT_TRUE(StringUtil::starts(str, "hello", opt));
+    EXPECT_FALSE(StringUtil::starts(str, "hello world", opt));
 }
 
 TEST(StringUtilTest, Ends) {
-    std::string        str = "Hello World";
+    std::string        str = "World";
     StringUtil::Option opt;
 
     EXPECT_TRUE(StringUtil::ends(str, "World"));
@@ -101,4 +102,5 @@ TEST(StringUtilTest, Ends) {
 
     opt.sensitive = false;
     EXPECT_TRUE(StringUtil::ends(str, "world", opt));
+    EXPECT_FALSE(StringUtil::ends(str, "hello world", opt));
 }

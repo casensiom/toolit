@@ -21,6 +21,7 @@ public:
     double getX() const { return x; }
     double getY() const { return y; }
 
+    double distance(const Vector2 &other, Distance type = EUCLIDEAN) const;
 
     TMP_SCALAR void  set(T _v)                { x = (double)_v; y = (double)_v; }
     TMP_SCALAR void  set(T _x, T _y)          { x = (double)_x; y = (double)_y; }

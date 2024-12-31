@@ -4,6 +4,12 @@
 
 namespace cam::math {
 
+enum Distance {
+    MANHATTAN,
+    EUCLIDEAN,
+    CHEBYSHEV
+};
+
 namespace Float64 {
     static constexpr double PI        = 3.14159265358979323846264338327950288;
     static constexpr double RADTODEG  = (180.0 / PI);

@@ -47,7 +47,7 @@ done
 cd ..
 BASE_DIR=$(pwd)
 UNAME=$(uname)
-EXTRA_ERROR="--ignore-errors mismatch,mismatch --ignore-errors gcov,gcov"
+EXTRA_ERROR="--ignore-errors mismatch,mismatch"
 if [ "$UNAME" == "Darwin" ]; then
 EXTRA_ERROR="${EXTRA_ERROR} --ignore-errors inconsistent --ignore-errors range"
 fi

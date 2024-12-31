@@ -159,3 +159,37 @@ TEST(Vector2Test, MixedTypeOperations) {
     EXPECT_EQ(v2 + 3.5, Vector2(4.5, 5.5));
     EXPECT_EQ(1.0 / v2, Vector2(1, 0.5));
 }
+
+TEST(Vector2Test, DistanceCalculation) {
+    Vector2 v1(0, 0);
+    Vector2 v2(3, 4);
+    Vector2 v3(-3, -4);
+
+    // Test Euclidean distance
+    EXPECT_NEAR(v1.distance(v2, Distance::EUCLIDEAN), 5.0, Float64::EPSILON);
+    EXPECT_NEAR(v2.distance(v1, Distance::EUCLIDEAN), 5.0, Float64::EPSILON);
+    EXPECT_NEAR(v1.distance(v3, Distance::EUCLIDEAN), 5.0, Float64::EPSILON);
+
+    // Test Manhattan distance
+    EXPECT_EQ(v1.distance(v2, Distance::MANHATTAN), 7.0);
+    EXPECT_EQ(v2.distance(v1, Distance::MANHATTAN), 7.0);
+    EXPECT_EQ(v1.distance(v3, Distance::MANHATTAN), 7.0);
+
+    // Test Chebyshev distance
+    EXPECT_EQ(v1.distance(v2, Distance::CHEBYSHEV), 4.0);
+    EXPECT_EQ(v2.distance(v1, Distance::CHEBYSHEV), 4.0);
+    EXPECT_EQ(v1.distance(v3, Distance::CHEBYSHEV), 4.0);
+
+    // Test with vectors having the same coordinates
+    Vector2 v4(2, 2);
+    EXPECT_EQ(v4.distance(v4, Distance::EUCLIDEAN), 0.0);
+    EXPECT_EQ(v4.distance(v4, Distance::MANHATTAN), 0.0);
+    EXPECT_EQ(v4.distance(v4, Distance::CHEBYSHEV), 0.0);
+
+    // Test with vectors on axes
+    Vector2 v5(0, 5);
+    Vector2 v6(5, 0);
+    EXPECT_EQ(v5.distance(v6, Distance::MANHATTAN), 10.0);
+    EXPECT_NEAR(v5.distance(v6, Distance::EUCLIDEAN), std::sqrt(50.0), Float64::EPSILON);
+    EXPECT_EQ(v5.distance(v6, Distance::CHEBYSHEV), 5.0);
+}

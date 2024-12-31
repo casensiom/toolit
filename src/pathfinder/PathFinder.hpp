@@ -14,27 +14,28 @@ enum Type {
     BLOCK
 };
 
-struct Cell {
-    math::Vector2 pos;
-    int32_t type;
-};
-
 struct Step {
-    int64_t x;
-    int64_t y;
-    int64_t distance = 0;
-    int64_t gcost = -1;
-    int64_t hcost = -1;
-    int64_t prev = -1;
-    bool    found;
+    int32_t type;
+    double  distance = 0;
+    double  gcost = 0;
+    double  hcost = 0;
+    bool    found = false;
+    math::Vector2 prev;
 };
 
 class PathFinder {
 protected:
-    virtual std::vector<std::vector<Cell>> parse(const std::vector<std::string> &data) const;
-    virtual bool canMove(const std::vector<std::vector<Cell>> &map, const math::Vector2 &from, const math::Vector2 &dir, const math::Vector2 &to) const;
+    virtual void foundStart(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const;
+    virtual void foundEnd(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const;
+    virtual bool canMove(const std::vector<std::vector<Step>> &map, const math::Vector2 &pos, const math::Vector2 &target) const;
+    
     virtual std::vector<math::Vector2> getValidDirections() const;
-    std::vector<math::Vector2> solve_a_star(const std::vector<std::vector<Cell>> &map) const;
+    virtual double computeCost(const std::vector<std::vector<Step>> &table, const math::Vector2 &pos, const math::Vector2 &target) const;
+    virtual double computeHeuristic(const std::vector<std::vector<Step>> &table, const math::Vector2 &pos, const math::Vector2 &target) const;
+
+    virtual std::vector<std::vector<Step>> parse(const std::vector<std::string> &data) const;
+    
+    std::vector<math::Vector2> solve_a_star(std::vector<std::vector<Step>> &map) const;
 
     void dump(const std::vector<std::string> &map, const std::vector<math::Vector2> &solution) const;
 
@@ -43,8 +44,7 @@ public:
     ~PathFinder() = default;
 
     std::vector<math::Vector2> solve(const std::vector<std::string> &data) const;
-
-
+    double cost(const std::vector<std::string> &data) const;
 };
 
 }    // namespace cam::pathfinder
