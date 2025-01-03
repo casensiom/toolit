@@ -4,9 +4,8 @@
 #include "MathUtil.hpp"
 #include "Vector2.hpp"
 
-#include <stdint.h>
-#include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 namespace cam::math {
 

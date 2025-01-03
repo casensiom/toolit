@@ -13,8 +13,9 @@
 #else
 
 #    include <direct.h>
-
-#    define NOMINMAX
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
 #    include <wtypes.h>
 
 constexpr auto DT_UNKNOWN = 0;
