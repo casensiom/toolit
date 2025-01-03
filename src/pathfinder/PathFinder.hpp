@@ -7,44 +7,46 @@
 
 namespace cam::pathfinder {
 
-enum Type {
-    EMPTY,
-    START,
-    END,
-    BLOCK
-};
+enum Type { EMPTY, START, END, BLOCK };
 
-struct Step {
-    int32_t type;
-    double  distance = 0;
-    double  gcost = 0;
-    double  hcost = 0;
-    bool    found = false;
-    math::Vector2 prev;
+struct Node {
+    math::Vector2              pos;
+    double                     g;
+    int                        dir;
+    std::vector<math::Vector2> path;
+
+    bool
+    operator>(const Node &other) const {
+        return g > other.g;
+    }
 };
 
 class PathFinder {
 protected:
-    virtual void foundStart(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const;
-    virtual void foundEnd(std::vector<std::vector<Step>> &table, const math::Vector2 &pos) const;
-    virtual bool canMove(const std::vector<std::vector<Step>> &map, const math::Vector2 &pos, const math::Vector2 &target) const;
-    
-    virtual std::vector<math::Vector2> getValidDirections() const;
-    virtual double computeCost(const std::vector<std::vector<Step>> &table, const math::Vector2 &pos, const math::Vector2 &target) const;
-    virtual double computeHeuristic(const std::vector<std::vector<Step>> &table, const math::Vector2 &pos, const math::Vector2 &target) const;
+    std::vector<std::vector<Type>>          map;
+    std::vector<math::Vector2>              solution;
+    std::vector<std::vector<math::Vector2>> equivalentPaths;
+    double                                  minCost;
 
-    virtual std::vector<std::vector<Step>> parse(const std::vector<std::string> &data) const;
-    
-    std::vector<math::Vector2> solve_a_star(std::vector<std::vector<Step>> &map) const;
-
-    void dump(const std::vector<std::string> &map, const std::vector<math::Vector2> &solution) const;
+protected:
+    virtual Node                           onStart(const math::Vector2 &pos) const;
+    virtual bool                           inside(const math::Vector2 &pos) const;
+    virtual bool                           canMove(const math::Vector2 &pos, const math::Vector2 &target) const;
+    virtual std::vector<math::Vector2>     getValidDirections() const;
+    virtual double                         computeCost(const Node &current, const math::Vector2 &target) const;
+    virtual double                         computeHeuristic(const math::Vector2 &pos, const math::Vector2 &target) const;
+    virtual std::vector<std::vector<Type>> parse(const std::vector<std::string> &data) const;
+    std::vector<math::Vector2>             solve_a_star();
 
 public:
     PathFinder()  = default;
     ~PathFinder() = default;
 
-    std::vector<math::Vector2> solve(const std::vector<std::string> &data) const;
-    double cost(const std::vector<std::string> &data) const;
+    void                                    set(const std::vector<std::string> &data);
+    std::vector<math::Vector2>              solve();
+    std::vector<std::vector<math::Vector2>> alternatives() const;
+    double                                  cost() const;
+    void                                    dump() const;
 };
 
 }    // namespace cam::pathfinder
