@@ -92,7 +92,13 @@ struct Position {
 
 std::vector<math::Vector2>
 PathFinder::solve_a_star() {
-    math::Vector2 start, end;
+    math::Vector2 start;
+    math::Vector2 end;
+    auto          dirs = getValidDirections();
+
+    const int HEIGHT = map.size();
+    const int WIDTH  = map[0].size();
+    const int NDIRS  = dirs.size();
 
     for(size_t y = 0; y < map.size(); ++y) {
         for(size_t x = 0; x < map[y].size(); ++x) {
@@ -104,11 +110,12 @@ PathFinder::solve_a_star() {
         }
     }
 
-    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openSet;
-    std::map<Position, int>                                          visited;
+    equivalentPaths.clear();
 
-    auto dirs = getValidDirections();
-    minCost   = std::numeric_limits<double>::max();
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openSet;
+    std::vector<int>                                                 visited(HEIGHT * WIDTH * NDIRS, std::numeric_limits<int>::max());
+
+    minCost = std::numeric_limits<double>::max();
     openSet.push(onStart(start));
     while(!openSet.empty()) {
         Node current = openSet.top();
@@ -130,6 +137,12 @@ PathFinder::solve_a_star() {
             continue;
         }
 
+        int offset = (WIDTH * (int)current.pos.getY() + (int)current.pos.getX()) * NDIRS + current.dir;
+        if(visited[offset] <= current.g) {
+            continue;
+        }
+        visited[offset] = current.g;
+
         for(size_t idx = 0; idx < dirs.size(); idx++) {
             const auto &dir = dirs[idx];
 
@@ -146,14 +159,6 @@ PathFinder::solve_a_star() {
             if(tentativeG > minCost) {
                 continue;
             }
-
-            auto it = visited.find({(int)neighbor.getX(), (int)neighbor.getY(), (int)idx});
-            if(it != visited.end()) {
-                if(it->second < tentativeG) {
-                    continue;
-                }
-            }
-            visited[{(int)neighbor.getX(), (int)neighbor.getY(), (int)idx}] = tentativeG;
 
             auto copy = current.path;
             copy.push_back(neighbor);
@@ -185,7 +190,7 @@ PathFinder::dump() const {
                         break;
                     }
                 }
-                ss << (found ? "x" : " ");
+                ss << (found ? "x" : ".");
             }
         }
         ss << std::endl;
